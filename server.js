@@ -17,8 +17,14 @@ const { deleteAppointment } = require('./controllers/appointmentController/delet
 const port = process.env.PORT;
 
 const app = express();
+
 // Allow all origins
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json());
 
 connectToMongo();
