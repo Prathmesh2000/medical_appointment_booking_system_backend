@@ -17,6 +17,9 @@ app.use(express.json());
 
 connectToMongo();
 
+app.use('/', ((req, res)=>{
+  return res.send('working fine')  
+}))
 app.use('/api/auth', authRoutes);
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/appointment', appointmentRoutes);
