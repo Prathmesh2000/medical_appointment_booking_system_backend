@@ -28,9 +28,9 @@ app.get('/', ((req, res)=>{
 }))
 
 //----authRoutes
-app.post('/login', login);
-app.post('/signup', signup);
-app.post('/verifyuser', verifyToken)
+app.post('/api/auth/login', login);
+app.post('/api/auth/signup', signup);
+app.post('/api/auth/verifyuser', verifyToken)
 
 
 //----doctorRoutes
