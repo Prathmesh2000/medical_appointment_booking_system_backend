@@ -20,43 +20,31 @@ const getAvailableDoctorSlots = async (req, res) => {
 
     // Extract the booked time slots
     const bookedSlots = existingAppointments.map(appointment => appointment.timeSlot);
-    const bookedSlotsArray = bookedSlots.map(appointment => appointment.timeSlot);
+    
+    // Get the day of the week (e.g., Monday, Tuesday)
     const dayOfWeek = new Date(date).toLocaleString("en-US", { weekday: "long" });
 
     // Check if the doctor has availability for the day
     if (!doctor.availability || !doctor.availability.get(dayOfWeek)) {
-        return notFoundResponse(res, `No availability for this doctor on ${dayOfWeek}.`)
+      return notFoundResponse(res, `No availability for this doctor on ${dayOfWeek}.`);
     }
 
-    const availableSlots = doctor.availability.get(dayOfWeek).filter(slot => !bookedSlotsArray.includes(slot));
+    // Get the doctor's available time slots for the given day
+    const availableSlots = doctor.availability.get(dayOfWeek).filter(slot => !bookedSlots.includes(slot));
 
-    // Filter available slots based on the doctor's availability
-    // const availableSlots = {};
-
-    // // Loop through the doctor's availability (Map object) and check available slots for each day
-    // doctor.availability.forEach((slots, day) => {
-    //   // Filter out booked slots for each day
-    //   const availableForDay = slots.filter(slot => !bookedSlotsArray.includes(slot));
-
-    //   // If there are available slots for the day, add them to the result object
-    //   if (availableForDay.length > 0) {
-    //     availableSlots[day] = availableForDay;
-    //   }
-    // });
-
-    // If no slots available for the given day, return an empty object
-    if (Object.keys(availableSlots).length === 0) {
-        return notFoundResponse(res, 'No available slots for the requested date')
+    // If no slots are available for the given day, return a message
+    if (availableSlots.length === 0) {
+      return notFoundResponse(res, 'No available slots for the requested date');
     }
 
     // Send the doctor details along with available slots as response
     return successResponse(res, {
-        doctor: {
-          name: doctor.name,
-          specialty: doctor.specialty,
-          qualification: doctor.qualification,
-          availableSlots
-        }
+      doctor: {
+        name: doctor.name,
+        specialty: doctor.specialty,
+        qualification: doctor.qualification,
+        availableSlots
+      }
     });
 
   } catch (err) {
