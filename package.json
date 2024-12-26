@@ -2,9 +2,11 @@
   "name": "medical_appointment_booking_system_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "vercel-build": "node ./build.js",
     "dev": "nodemon server.js",    
     "start": "node server.js",    
     "build": "echo 'No build step for this app'",
