@@ -15,7 +15,9 @@ MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/your_database
 ```
 
 ## Steps to Run the Project
-
+```bash
+npm i
+```
 ### Development Mode
 To run the project in development mode (with hot-reloading):
 ```bash
