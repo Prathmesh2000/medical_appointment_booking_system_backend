@@ -1,11 +1,17 @@
 require('dotenv').config();
 const express = require('express');
-const authRoutes = require('./routes/authRoutes');
-const doctorRoutes = require('./routes/doctorRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
 const connectToMongo = require('./config/db');
 const cors = require('cors');
-const Doctor = require('./models/doctorModel');
+const { login } = require('./controllers/authController/login');
+const { signup } = require('./controllers/authController/signup');
+const { verifyToken } = require('./controllers/authController/verifytoken');
+const { getAvailableDoctors } = require('./controllers/doctorController/fetchavailabledoctor');
+const { getAvailableDoctorSlots } = require('./controllers/doctorController/fetchdoctordata');
+const { getAppointmentsByUsername } = require('./controllers/appointmentController/fetch');
+const { createAppointment } = require('./controllers/appointmentController/create');
+const { updateAppointment } = require('./controllers/appointmentController/update');
+const { deleteAppointment } = require('./controllers/appointmentController/delete');
+
 
 
 const port = process.env.PORT;
@@ -20,10 +26,22 @@ connectToMongo();
 app.get('/', ((req, res)=>{
   return res.send('working fine')  
 }))
-app.use('/api/auth', authRoutes);
-app.use('/api/doctor', doctorRoutes);
-app.use('/api/appointment', appointmentRoutes);
 
+//----authRoutes
+app.post('/login', login);
+app.post('/signup', signup);
+app.post('/verifyuser', verifyToken)
+
+
+//----doctorRoutes
+app.get('/api/doctor/available', getAvailableDoctors);
+app.get('/api/doctor/available-slots', getAvailableDoctorSlots);
+
+//----appointmentRoutes
+app.get('/api/appointment/', getAppointmentsByUsername);
+app.post('/api/appointment/insert', createAppointment);
+app.patch('/api/appointment/update/:appointmentId', updateAppointment);  
+app.delete('/api/appointment/delete/:appointmentId', deleteAppointment); 
 
 // Start the server
 app.listen(port, () => {
