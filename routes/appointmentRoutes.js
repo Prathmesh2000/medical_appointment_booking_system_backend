@@ -5,9 +5,16 @@ const { updateAppointment } = require('../controllers/appointmentController/upda
 const { deleteAppointment } = require('../controllers/appointmentController/delete');
 const router = express.Router();
 
+// Get all appointments for a specific username
 router.get('/', getAppointmentsByUsername);
+
+// Create a new appointment
 router.post('/insert', createAppointment);
-router.patch('/update:appointmentId', updateAppointment);
-router.delete('/delete:appointmentId', deleteAppointment);
+
+// Update an appointment by appointmentId
+router.patch('/update/:appointmentId', updateAppointment);  // Corrected with ':' for parameter
+
+// Delete an appointment by appointmentId
+router.delete('/delete/:appointmentId', deleteAppointment);  // Corrected with ':' for parameter
 
 module.exports = router;

@@ -7,10 +7,10 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "nodemon server.js",    
-    "start": "node server.js",    
+    "dev": "vercel dev",
+    "start": "vercel start",
     "build": "echo 'No build step for this app'",
-    "test": "echo 'No tests specified'" 
+    "test": "echo 'No tests specified'"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +25,7 @@
     "mongoose": "^8.9.2",
     "nodemon": "^3.1.9",
     "react-datepicker": "^7.5.0",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "vercel": "^39.2.2"
   }
 }
