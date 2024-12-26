@@ -11,6 +11,7 @@ const { getAppointmentsByUsername } = require('./controllers/appointmentControll
 const { createAppointment } = require('./controllers/appointmentController/create');
 const { updateAppointment } = require('./controllers/appointmentController/update');
 const { deleteAppointment } = require('./controllers/appointmentController/delete');
+const { sendOtp } = require('./controllers/authController/forgetpassword');
 
 
 
@@ -18,7 +19,7 @@ const port = process.env.PORT;
 
 const app = express();
 
-// Allow all origins
+// Allow all origins as currently deploying to test env, in production env should be specified
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -29,7 +30,7 @@ app.use(express.json());
 
 connectToMongo();
 
-app.get('/', ((req, res)=>{
+app.get('/', ((req, res)=>{         //testing route
   return res.send('working fine')  
 }))
 

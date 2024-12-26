@@ -3,7 +3,7 @@ const { serverErrorResponse, successResponse, notFoundResponse } = require("../.
 const verifyToken = require("../../utils/authMiddleware");
 
 exports.deleteAppointment = [
-  verifyToken,
+  verifyToken, //JWT authentication middleware
   async (req, res) => {
       try {
         let { appointmentId } = req.params; // Get appointmentId from URL params

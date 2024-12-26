@@ -4,9 +4,9 @@ const { notFoundResponse, successResponse, serverErrorResponse } = require('../.
 
 // Controller function to get available doctor slots for a specific date
 const getAvailableDoctorSlots = async (req, res) => {
-  const { date, id } = req.query; // Get date and doctor id from query params
+  const { date, id } = req.query; 
   try {
-    // Fetch doctor data using the provided id
+    // Fetch doctor data 
     const doctor = await Doctor.findById(id);
     if (!doctor) {
       return notFoundResponse(res, 'Doctor not found');
@@ -16,7 +16,7 @@ const getAvailableDoctorSlots = async (req, res) => {
     const existingAppointments = await Appointment.find({
       doctorId: id,
       date: date
-    }).select('timeSlot'); // Only get time slots from appointments
+    }).select('timeSlot'); 
 
     // Extract the booked time slots
     const bookedSlots = existingAppointments.map(appointment => appointment.timeSlot);

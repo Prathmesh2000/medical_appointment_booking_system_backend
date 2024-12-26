@@ -4,7 +4,7 @@ const verifyToken = require("../../utils/authMiddleware");
 const { checkMissingParams } = require("../../utils/common");
 
 exports.createAppointment = [
-  verifyToken,
+  verifyToken, //JWT authentication middleware
   async (req, res) => {
     try {
       const {

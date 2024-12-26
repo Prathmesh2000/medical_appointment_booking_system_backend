@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 // Token verification controller
 exports.verifyToken = (req, res) => {
-  const token = req.body.token; // Expecting token in the request body
+  const token = req.body.token;
 
   if (!token) {
     return res.status(400).json({ message: 'Token is required' });
@@ -14,7 +14,7 @@ exports.verifyToken = (req, res) => {
     return res.status(200).json({
       valid: true,
       message: 'Token is valid',
-      decoded, // Send the decoded payload
+      decoded, // Send the decoded payload username is required at client
     });
   } catch (error) {
     return res.status(401).json({

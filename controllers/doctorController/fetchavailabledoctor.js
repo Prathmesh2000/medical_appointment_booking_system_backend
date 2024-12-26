@@ -9,13 +9,13 @@ const checkDoctorAvailability = async (doctorId, date, timeSlot) => {
   
   // Check if the doctor is available on the given weekday
   if (doctor.availability && doctor.availability.get(dayOfWeek)) {
-    const availableSlots = doctor.availability.get(dayOfWeek); // Array of available time slots (e.g., ['x', 'y', 'z'])
+    const availableSlots = doctor.availability.get(dayOfWeek); // Array of available time slots
 
     // Fetch all appointments for the given doctor and date
     const appointments = await Appointment.find({
       doctorId: doctorId,
       date: date,
-    }).select('timeSlot'); // Only select timeSlot field
+    }).select('timeSlot'); 
 
     // Extract booked time slots
     const bookedSlots = appointments.map(appointment => appointment.timeSlot);
@@ -23,7 +23,7 @@ const checkDoctorAvailability = async (doctorId, date, timeSlot) => {
     // Filter available time slots by checking which ones are not booked
     const remainingAvailableSlots = availableSlots.filter(slot => !bookedSlots.includes(slot));
 
-    // If no available slots, return false (doctor is not available)
+    // If no available slots, return doctor is not available
     if (remainingAvailableSlots.length === 0) {
       return false;
     }
@@ -70,7 +70,7 @@ const getAvailableDoctors = async (req, res) => {
     // Send the list of available doctors
     return successResponse(res, {
       doctors: availableDoctors,
-      total: availableDoctors.length, // Total available doctors
+      total: availableDoctors.length,
     });
   } catch (err) {
     return serverErrorResponse(res, err);

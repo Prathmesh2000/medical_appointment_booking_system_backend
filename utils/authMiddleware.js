@@ -12,8 +12,8 @@ const verifyToken = (req, res, next) => {
 
   try {
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Assuming the secret key is stored in env
-    req.user = decoded; // Attach decoded user information to the request object
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    req.user = decoded; 
     next(); // Proceed to the next middleware or route handler
   } catch (err) {
     return unauthorizedResponse(res, "Invalid Token");

@@ -26,19 +26,19 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    phoneNumbers: {
+    phoneNumbers: {   // currently not storing but in future if otp validation added required field
       type: [String], // Store phone numbers as an array of strings
       required: false,
       validate: {
         validator: function (value) {
-          return value.every((num) => /\+?\d{10,}/.test(num)); // simple phone number validation
+          return value.every((num) => /\+?\d{10,}/.test(num)); // phone number validation
         },
         message: 'Phone number should be valid',
       },
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'superadmin'], // You can define roles here
+      enum: ['user', 'admin', 'superadmin'], //roles for case in future IMA need to be implemented 
       default: 'user',
     },
   },

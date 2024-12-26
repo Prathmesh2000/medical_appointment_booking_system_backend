@@ -3,9 +3,8 @@ const { missingParamResponse, serverErrorResponse, successResponse } = require("
 const verifyToken = require("../../utils/authMiddleware");
 const { checkMissingParams } = require("../../utils/common");
 
-// Add the middleware to the route
 exports.getAppointmentsByUsername = [
-  verifyToken,  // Apply JWT authentication middleware
+  verifyToken,  //JWT authentication middleware
   async (req, res) => {
     try {
       const { username } = req.query;
