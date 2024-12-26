@@ -17,7 +17,7 @@ app.use(express.json());
 
 connectToMongo();
 
-app.use('/', ((req, res)=>{
+app.get('/', ((req, res)=>{
   return res.send('working fine')  
 }))
 app.use('/api/auth', authRoutes);
