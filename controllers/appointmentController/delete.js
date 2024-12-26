@@ -7,8 +7,7 @@ exports.deleteAppointment = [
   async (req, res) => {
       try {
         let { appointmentId } = req.params; // Get appointmentId from URL params
-        appointmentId= appointmentId.replace(':', '');
-  
+          
         const appointment = await Appointment.findByIdAndDelete(appointmentId);
     
         if (!appointment) {
