@@ -1,9 +1,9 @@
-const Doctor = require('../../models/doctorModel');
-const { successResponse, serverErrorResponse } = require('../../utils/apiFunction');
+const Doctor = require("../../models/doctorModel");
+const { serverErrorResponse, successResponse } = require("../../utils/apiFunction");
 
 const getAvailableDoctors = async (req, res) => {
-  const { date, timeSlot } = req.query; 
-  const dayOfWeek = new Date(date).toLocaleString('en-us', { weekday: 'long' }); // Get the weekday (e.g., Monday, Tuesday)
+  const { date, timeSlot } = req.query;
+  const dayOfWeek = new Date(date).toLocaleString('en-us', { weekday: 'long' });
 
   try {
     const availableDoctors = await Doctor.aggregate([
@@ -14,13 +14,13 @@ const getAvailableDoctors = async (req, res) => {
       },
       {
         $lookup: {
-          from: 'appointments', // Join with appointments collection
-          localField: '_id',     
+          from: 'appointments',
+          localField: '_id',
           foreignField: 'doctorId',
           pipeline: [
             {
               $match: {
-                date: date, 
+                date: date,
               },
             },
             {
@@ -34,21 +34,15 @@ const getAvailableDoctors = async (req, res) => {
         $addFields: {
           availableSlots: {
             $setDifference: [
-              {
-                $cond: {
-                  if: { $isArray: { $arrayElemAt: [`$availability.${dayOfWeek}`, 0] } }, 
-                  then: { $arrayElemAt: [`$availability.${dayOfWeek}`, 0] },
-                  else: [{ $arrayElemAt: [`$availability.${dayOfWeek}`, 0] }], 
-                },
-              },
-              { $map: { input: '$appointments', as: 'appointment', in: '$$appointment.timeSlot' } }, 
+              `$availability.${dayOfWeek}`,
+              { $map: { input: '$appointments', as: 'appointment', in: '$$appointment.timeSlot' } },
             ],
           },
         },
       },
       {
         $match: {
-          availableSlots: { $ne: [] },
+          availableSlots: { $ne: [] }, 
         },
       },
       {
@@ -67,7 +61,7 @@ const getAvailableDoctors = async (req, res) => {
       if (timeSlot) {
         return doctor.availableSlots.includes(timeSlot);
       }
-      return true; 
+      return true;
     });
 
     return successResponse(res, {
