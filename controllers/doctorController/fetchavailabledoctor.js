@@ -1,76 +1,78 @@
-const Appointment = require('../../models/appointmentModel');
 const Doctor = require('../../models/doctorModel');
 const { successResponse, serverErrorResponse } = require('../../utils/apiFunction');
 
-// Helper function to check doctor availability considering booked time slots
-const checkDoctorAvailability = async (doctorId, date, timeSlot) => {
-  const dayOfWeek = new Date(date).toLocaleString('en-us', { weekday: 'long' }); // Get the weekday (e.g., Monday, Tuesday)
-  const doctor = await Doctor.findById(doctorId);
-  
-  // Check if the doctor is available on the given weekday
-  if (doctor.availability && doctor.availability.get(dayOfWeek)) {
-    const availableSlots = doctor.availability.get(dayOfWeek); // Array of available time slots
-
-    // Fetch all appointments for the given doctor and date
-    const appointments = await Appointment.find({
-      doctorId: doctorId,
-      date: date,
-    }).select('timeSlot'); 
-
-    // Extract booked time slots
-    const bookedSlots = appointments.map(appointment => appointment.timeSlot);
-
-    // Filter available time slots by checking which ones are not booked
-    const remainingAvailableSlots = availableSlots.filter(slot => !bookedSlots.includes(slot));
-
-    // If no available slots, return doctor is not available
-    if (remainingAvailableSlots.length === 0) {
-      return false;
-    }
-
-    // If timeSlot is provided, check if it matches any remaining available slots
-    if (timeSlot) {
-      return remainingAvailableSlots.includes(timeSlot);
-    }
-    
-    // If no timeSlot is provided, return true if there are remaining available slots
-    return remainingAvailableSlots.length > 0;
-  }
-
-  // If no availability for the day, return false
-  return false;
-};
-
-// Controller function to get available doctors
 const getAvailableDoctors = async (req, res) => {
-  const { date, timeSlot } = req.query; // Get date, timeSlot from query params
+  const { date, timeSlot } = req.query; 
+  const dayOfWeek = new Date(date).toLocaleString('en-us', { weekday: 'long' }); // Get the weekday (e.g., Monday, Tuesday)
 
   try {
-    // Fetch all doctors
-    const doctors = await Doctor.find();
-    
-    const availableDoctors = [];
-    
-    // Check each doctor for availability
-    for (const doctor of doctors) {
-      const isDoctorAvailable = await checkDoctorAvailability(doctor._id, date, timeSlot);
-      
-      // Only add the doctor if available
-      if (isDoctorAvailable) {
-        availableDoctors.push({
-          id: doctor._id,
-          name: doctor.name,
-          specialty: doctor.specialty,
-          qualification: doctor.qualification,
-          availability: doctor.availability,
-        });
-      }
-    }
+    const availableDoctors = await Doctor.aggregate([
+      {
+        $match: {
+          [`availability.${dayOfWeek}`]: { $exists: true },
+        },
+      },
+      {
+        $lookup: {
+          from: 'appointments', // Join with appointments collection
+          localField: '_id',     
+          foreignField: 'doctorId',
+          pipeline: [
+            {
+              $match: {
+                date: date, 
+              },
+            },
+            {
+              $project: { timeSlot: 1 }, 
+            },
+          ],
+          as: 'appointments', 
+        },
+      },
+      {
+        $addFields: {
+          availableSlots: {
+            $setDifference: [
+              {
+                $cond: {
+                  if: { $isArray: { $arrayElemAt: [`$availability.${dayOfWeek}`, 0] } }, 
+                  then: { $arrayElemAt: [`$availability.${dayOfWeek}`, 0] },
+                  else: [{ $arrayElemAt: [`$availability.${dayOfWeek}`, 0] }], 
+                },
+              },
+              { $map: { input: '$appointments', as: 'appointment', in: '$$appointment.timeSlot' } }, 
+            ],
+          },
+        },
+      },
+      {
+        $match: {
+          availableSlots: { $ne: [] },
+        },
+      },
+      {
+        $project: {
+          id: 1,
+          name: 1,
+          specialty: 1,
+          qualification: 1,
+          availability: 1,
+          availableSlots: 1,
+        },
+      },
+    ]);
 
-    // Send the list of available doctors
+    const filteredDoctors = availableDoctors.filter(doctor => {
+      if (timeSlot) {
+        return doctor.availableSlots.includes(timeSlot);
+      }
+      return true; 
+    });
+
     return successResponse(res, {
-      doctors: availableDoctors,
-      total: availableDoctors.length,
+      doctors: filteredDoctors,
+      total: filteredDoctors.length,
     });
   } catch (err) {
     return serverErrorResponse(res, err);
