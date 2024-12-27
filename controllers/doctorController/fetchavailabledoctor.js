@@ -53,7 +53,7 @@ const getAvailableDoctors = async (req, res) => {
       },
       {
         $project: {
-          id: 1,
+          id: '$_id',
           name: 1,
           specialty: 1,
           qualification: 1,
